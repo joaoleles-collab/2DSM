@@ -1,0 +1,20 @@
+<html>
+    <body>
+        <section id="missao">
+            Se cadastre na tabela aventureiro;
+            dica: INSERT INTO tabela (campo)
+            VALUES (valor);
+        </section>
+        <section id="sql">
+            <form method="POST" action="/cadastrar">
+                <textarea name="sql"></textarea>
+                <button type="submit">Executar</button>
+            </form>
+        </section>
+        <section id="mensagem">
+            {% if msg %}
+                {{ msg }}
+            {% endif %}
+        </section>
+    </body>
+</html>
