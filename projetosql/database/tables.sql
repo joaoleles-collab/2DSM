@@ -1,65 +1,87 @@
 
-USE RPG;
+USE sql_detetive;
 
 CREATE TABLE classe (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100)
 );
 
--- não esquecer de adicionar validação
--- add um select para ver se a guilda que ele está tentando inserir está com o estado CONTRATANDO
-CREATE TABLE guilda (
+CREATE TABLE museu (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(100),
-    estado VARCHAR(25) -- CONTRATANDO, FECHADA
+    nome VARCHAR(100)
 );
-    
-
-CREATE TABLE item (
+ 
+-- Fase 2: característica usada para filtrar suspeitos
+CREATE TABLE profissao (
 	id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(100),
-    raridade INT -- 0 A 10, vai servir como porcentagem no sorteio, 0 para itens lendários
+    nome VARCHAR(100)
 );
-
-CREATE TABLE quest (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(25),
-    descricao VARCHAR(255),
-    nivel_requerido INT,
-    item_requerido INT,
-    item_dropado INT,
-    FOREIGN KEY (item_requerido)
-		REFERENCES item(id)
-);
-
-CREATE TABLE aventureiro (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    nome VARCHAR(100) UNIQUE NOT NULL,
-    nivel INT, -- DEIXA ELE ESCOLHER, MAS COLOCA 1 NO FINAL hehe... easter egg
-    classe_fk INT,
-    guilda_fk INT,
-    quest_fk INT,
-    FOREIGN KEY (classe_fk) 
-		REFERENCES classe(id),
-	FOREIGN KEY (guilda_fk)
-		REFERENCES guilda(id),
-	FOREIGN KEY (quest_fk)
-		REFERENCES quest(id)
-);
-
-CREATE TABLE inventario (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-    -- estado? talvez futuramente: QUEBRADO, EVOLUÍDO, NORMAL
-    item_fk INT,
-    aventureiro_fk INT,
-    FOREIGN KEY (item_fk)
-		REFERENCES item(id),
-	FOREIGN KEY (aventureiro_fk)
-		REFERENCES aventureiro(id)
-);
-
-CREATE TABLE inimigo (
+ 
+-- Fase 1 a 4: as 5 pessoas registradas no sistema da polícia
+CREATE TABLE pessoa (
 	id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
-    nivel INT
+    idade INT, -- Fase 2: "mais de 30 anos"
+    profissao_fk INT,
+    FOREIGN KEY (profissao_fk)
+		REFERENCES profissao(id)
 );
+ 
+-- Fase 1 e 4: o roubo (horário confirmado: 23h40)
+CREATE TABLE crime (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100),
+    objeto_roubado VARCHAR(100),
+    valor_objeto DECIMAL(10,2),
+    horario DATETIME,
+    museu_fk INT,
+    FOREIGN KEY (museu_fk)
+		REFERENCES museu(id)
+);
+ 
+-- Fase 1, 2 e 4: registros de acesso ao museu (onde cada pessoa esteve e quando)
+CREATE TABLE acesso (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    pessoa_fk INT,
+    museu_fk INT,
+    local VARCHAR(50), -- Entrada, Galeria, Corredor...
+    horario DATETIME,
+    FOREIGN KEY (pessoa_fk)
+		REFERENCES pessoa(id),
+	FOREIGN KEY (museu_fk)
+		REFERENCES museu(id)
+);
+ 
+-- Fase 1, 2, 3 e 4: lista de suspeitos (começa com todos e vai sendo filtrada pelas consultas)
+CREATE TABLE suspeito (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    pessoa_fk INT,
+    crime_fk INT,
+    status VARCHAR(25), -- EM_ANALISE
+    FOREIGN KEY (pessoa_fk)
+		REFERENCES pessoa(id),
+	FOREIGN KEY (crime_fk)
+		REFERENCES crime(id)
+);
+ 
+-- Fase 3: a testemunha NÃO está na tabela pessoa (a Fase 1 mostra só 5 pessoas)
+CREATE TABLE testemunha (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100)
+);
+ 
+-- Fase 3: o que a testemunha lembra (só uma parte do nome)
+CREATE TABLE depoimento (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    testemunha_fk INT,
+    crime_fk INT,
+    horario DATETIME,
+    local_visto VARCHAR(50),
+    parte_nome VARCHAR(10), -- o nome começa com...
+    descricao VARCHAR(255),
+    FOREIGN KEY (testemunha_fk)
+		REFERENCES testemunha(id),
+	FOREIGN KEY (crime_fk)
+		REFERENCES crime(id)
+);
+ 

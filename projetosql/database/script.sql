@@ -1,2 +1,2 @@
 
-CREATE DATABASE RPG;
+CREATE DATABASE sql_detetive;
