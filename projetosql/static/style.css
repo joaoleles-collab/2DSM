@@ -1,0 +1,472 @@
+@charset "UTF-8";
+/* ==========================================================
+   SQL DETETIVE - folha de estilos
+   Feito só em CSS: nenhum .html / .py / .sql foi alterado.
+
+   Como funciona: os "cards" numerados do HTML viram as áreas
+   do mockup usando CSS Grid.
+     Célula 1 (linha 1, coluna 1) -> Personagem + Narrador
+     Célula 2 (linha 1, coluna 2) -> Editor SQL + botão Executar
+     Célula 3 (linha 2, coluna 1) -> Banco de dados
+     Célula 4 (linha 2, coluna 2) -> Resultado da consulta
+     Célula 5 (linha 2, coluna 3) -> Mensagem de erro
+   Título, subtítulo e "Relatório do caso" são desenhados com
+   pseudo-elementos (::before / ::after), pois não existem no HTML.
+   ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap');
+
+:root {
+    --preto: #000000;
+    --painel: #131e53;
+    --linha: #3d3827;
+    --amarelo: #ffdc5e;
+    --branco: #ffffff;
+    --cinza-texto: #b5b0b0;
+    --erro: #ff8f85;
+    --largura: 1640px;
+    --fonte: 'Open Sans', 'Segoe UI', Arial, sans-serif;
+}
+
+/* ---------- Página ---------- */
+
+html body {
+    margin: 0;
+    padding: 40px 0 64px;
+    min-height: 100vh;
+    background: var(--preto);
+    color: var(--branco);
+    font-family: var(--fonte);
+}
+
+/* Título "SQL DETETIVE" */
+body::before {
+    content: "SQL DETETIVE";
+    display: block;
+    width: min(var(--largura), calc(100% - 64px));
+    margin: 0 auto 6px;
+    font-size: clamp(2.2rem, 4.4vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+html body .container {
+    width: min(var(--largura), calc(100% - 64px));
+    max-width: none;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Subtítulo "Caso X - ..." */
+.container::before {
+    content: "Caso 001 - Roubo no Museu Central";
+    display: block;
+    margin: 0 0 22px 42px;
+    color: var(--cinza-texto);
+    font-size: 1.35rem;
+}
+
+.container > .card {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    color: inherit;
+    text-align: left;
+}
+
+/* ==========================================================
+   TELA DO JOGO (qualquer página que tenha um <form>)
+   ========================================================== */
+
+.container > .card:has(form) {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr);
+    grid-template-areas:
+        "narrador   narrador"
+        "relatorio  relatorio"
+        "banco      editor"
+        "banco      msg"
+        "banco      resultado";
+    column-gap: 48px;
+    row-gap: 0;
+}
+
+/* Os .row do Bootstrap deixam de existir como caixa: as colunas viram itens do grid */
+.container > .card:has(form) > .row {
+    display: contents;
+}
+
+.container > .card:has(form) > .row > .col {
+    box-sizing: border-box;
+    flex: none;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+}
+
+/* ---------- Personagem + Narrador (célula 1) ---------- */
+
+.container > .card:has(form) > .row:nth-child(1) > .col:nth-child(1) {
+    grid-area: narrador;
+    position: relative;
+    isolation: isolate;
+    min-height: 296px;
+    margin-bottom: 37px;
+    padding: 72px 17% 82px 40%;
+    background: var(--painel);
+    color: var(--branco);
+    font-size: 1.25rem;
+    line-height: 1.6;
+}
+
+/* Quadrado do personagem (troque por uma imagem com background-image, se quiser) */
+.container > .card:has(form) > .row:nth-child(1) > .col:nth-child(1)::before {
+    content: "personagem";
+    position: absolute;
+    top: 32px;
+    left: 3.84%;
+    width: 242px;
+    height: 244px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--amarelo);
+    background-size: cover;
+    background-position: center;
+    color: #111111;
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1;
+}
+
+/* Balão do narrador (com a setinha no canto inferior esquerdo) */
+.container > .card:has(form) > .row:nth-child(1) > .col:nth-child(1)::after {
+    content: "NARRADOR";
+    position: absolute;
+    z-index: -1;
+    top: 32px;
+    bottom: 0;
+    left: 36%;
+    right: 14.6%;
+    box-sizing: border-box;
+    padding: 14px 0 0 69px;
+    background: var(--preto);
+    color: var(--amarelo);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.2;
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        100% calc(100% - 62px),
+        151px calc(100% - 62px),
+        51px 100%,
+        51px calc(100% - 62px),
+        0 calc(100% - 62px)
+    );
+}
+
+/* ---------- Relatório do caso ---------- */
+
+.container > .card:has(form)::before {
+    content: "RELATÓRIO DO CASO";
+    grid-area: relatorio;
+    align-self: start;
+    position: relative;
+    z-index: 1;
+    padding: 12px 0 0 81px;
+    color: var(--amarelo);
+    font-size: 1.1rem;
+}
+
+.container > .card:has(form)::after {
+    content: "OBJETIVO:";
+    grid-area: relatorio;
+    align-self: stretch;
+    box-sizing: border-box;
+    min-height: 107px;
+    margin: 0 19px 60px 11px;
+    padding: 40px 40px 24px 83px;
+    background: var(--painel);
+    color: var(--branco);
+    font-size: clamp(1.2rem, 1.9vw, 1.9rem);
+    line-height: 1.35;
+}
+
+/* Objetivo de cada fase (o <form action> identifica a fase) */
+.container > .card:has(form[action="/primeira_fase"])::after {
+    content: "OBJETIVO: Identificar as pessoas que estavam no museu no momento do crime e iniciar a lista de suspeitos.";
+}
+
+/* ---------- Banco de dados (célula 3) ---------- */
+
+.container > .card:has(form) > .row:nth-child(2) > .col:nth-child(1) {
+    grid-area: banco;
+    align-self: start;
+    min-height: 313px;
+    padding: 14px 17px 20px;
+    background: var(--painel);
+    color: var(--branco);
+    font-size: 1rem;
+}
+
+.container > .card:has(form) > .row:nth-child(2) > .col:nth-child(1)::before {
+    content: "BANCO DE DADOS";
+    display: block;
+    margin-bottom: 12px;
+    color: var(--amarelo);
+    font-size: 0.95rem;
+}
+
+/* ---------- Editor SQL (célula 2) ---------- */
+
+.container > .card:has(form) > .row:nth-child(1) > .col:nth-child(2) {
+    grid-area: editor;
+    min-height: 330px;
+    padding: 46px 5% 8px 21px;
+    background: var(--painel);
+    font-size: 0;   /* esconde o "2" de teste; o form volta ao tamanho normal abaixo */
+    line-height: 0;
+}
+
+.container > .card:has(form) form {
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.container > .card:has(form) form .sqlbox {
+    display: block;
+    box-sizing: border-box;
+    width: calc(100% - 118px);
+    min-height: 208px;
+    margin: 0 0 32px 118px !important;   /* !important para vencer o .mt-3 do Bootstrap */
+    padding: 36px 68px;
+    border: 0;
+    border-radius: 56px;
+    background: var(--preto);
+    color: var(--branco);
+    font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    resize: vertical;
+    box-shadow: none;
+}
+
+.container > .card:has(form) form .sqlbox::placeholder {
+    color: var(--branco);
+    opacity: 1;
+    font-family: var(--fonte);
+    font-size: 1.4rem;
+    text-transform: uppercase;
+}
+
+.container > .card:has(form) form .sqlbox:focus {
+    outline: 2px solid var(--amarelo);
+    outline-offset: 0;
+    background: var(--preto);
+    color: var(--branco);
+    box-shadow: none;
+}
+
+/* ---------- Botões (Executar, Próxima Fase, Começar) ---------- */
+
+.container > .card form button[type="submit"],
+.container > .card a {
+    display: inline-block;
+    margin: 0;
+    padding: 7px 26px 5px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--amarelo);
+    color: #111111;
+    font-family: var(--fonte);
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1.3;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.container > .card form button[type="submit"]:hover,
+.container > .card a:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.container > .card form button[type="submit"]:active,
+.container > .card a:active {
+    transform: translateY(1px);
+}
+
+/* ---------- Mensagem de erro (célula 5) ---------- */
+
+.container > .card:has(form) > .row:nth-child(2) > .col:nth-child(3) {
+    grid-area: msg;
+    padding-top: 14px;
+    color: var(--erro);
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+/* ---------- Resultado da consulta (célula 4) ---------- */
+
+.container > .card:has(form) > .row:nth-child(2) > .col:nth-child(2) {
+    grid-area: resultado;
+    font-size: 0;   /* esconde o "4" de teste; o conteúdo real volta ao normal abaixo */
+    line-height: 0;
+}
+
+.container > .card:has(form) .tabela-container {
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 16px;
+    padding: 18px 22px;
+    overflow-x: auto;
+    background: var(--painel);
+    color: var(--branco);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.container > .card:has(form) .tabela-container .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--branco);
+    --bs-table-border-color: var(--linha);
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    color: var(--branco);
+}
+
+.container > .card:has(form) .tabela-container .table th {
+    padding: 10px 14px;
+    border: 0;
+    border-bottom: 2px solid var(--amarelo);
+    background: transparent;
+    box-shadow: none;
+    color: var(--amarelo);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.container > .card:has(form) .tabela-container .table td {
+    padding: 10px 14px;
+    border: 0;
+    border-bottom: 1px solid var(--linha);
+    background: transparent;
+    box-shadow: none;
+    color: var(--branco);
+}
+
+.container > .card:has(form) .tabela-container .table tbody tr:hover td {
+    background: rgba(255, 220, 94, 0.08);
+}
+
+/* Link "Próxima Fase" */
+.container > .card:has(form) > .row:nth-child(2) > .col:nth-child(2) > a {
+    margin-top: 20px;
+    font-size: 1.05rem;
+    line-height: 1.3;
+}
+
+.container > .card:has(form) > .row:nth-child(2) > .col:nth-child(2) > a::after {
+    content: " →";
+}
+
+/* ==========================================================
+   TELA INICIAL (index.html: não tem <form>)
+   Só recebe o mesmo tema, pois o mockup é da tela do jogo.
+   ========================================================== */
+
+.container > .card:not(:has(form)) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding: 40px;
+    background: var(--painel);
+    text-align: center;
+}
+
+.container > .card:not(:has(form)) > .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    margin: 0;
+}
+
+.container > .card:not(:has(form)) > .row > .col {
+    box-sizing: border-box;
+    width: auto;
+    margin: 0;
+    padding: 36px 24px;
+    background: var(--preto);
+    font-size: 1.2rem;
+}
+
+/* ==========================================================
+   CELULAR / TELAS ESTREITAS
+   ========================================================== */
+
+@media (max-width: 900px) {
+    .container > .card:has(form) {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "narrador"
+            "relatorio"
+            "editor"
+            "msg"
+            "resultado"
+            "banco";
+    }
+
+    .container > .card:has(form) > .row:nth-child(1) > .col:nth-child(1) {
+        padding: 72px 24px 82px 184px;
+    }
+
+    .container > .card:has(form) > .row:nth-child(1) > .col:nth-child(1)::before {
+        left: 24px;
+        width: 120px;
+        height: 120px;
+        font-size: 1rem;
+    }
+
+    .container > .card:has(form) > .row:nth-child(1) > .col:nth-child(1)::after {
+        left: 160px;
+        right: 24px;
+        padding-left: 16px;
+    }
+
+    .container > .card:has(form)::after {
+        padding-left: 40px;
+    }
+
+    .container > .card:has(form)::before {
+        padding-left: 40px;
+    }
+
+    .container > .card:has(form) > .row:nth-child(1) > .col:nth-child(2) {
+        padding: 32px 20px 8px;
+    }
+
+    .container > .card:has(form) form .sqlbox {
+        width: 100%;
+        margin-left: 0 !important;
+        padding: 28px 32px;
+        border-radius: 36px;
+    }
+
+    .container > .card:has(form) > .row:nth-child(2) > .col:nth-child(1) {
+        margin-top: 24px;
+    }
+}
